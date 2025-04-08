@@ -1,22 +1,7 @@
 # dYdX v4 Client.js Tutorial
 
-This tutorial will guide you through setting up and using the `@dydxprotocol/v4-client-js` package to interact with the dYdX v4 protocol. By the end, you'll have a functioning application that can connect to the dYdX network, manage wallets, fetch market data, and execute trades.
+This guide will walk you through setting up and using the `@dydxprotocol/v4-client-js` package to interact with the dYdX v4 protocol. By the end, you'll have a functioning application that can connect to the dYdX network, manage wallets, fetch market data, and execute trades.
 
-## Table of Contents
-
-- [dYdX v4 Client.js Tutorial](#dydx-v4-clientjs-tutorial)
-  - [Table of Contents](#table-of-contents)
-  - [Project Setup](#project-setup)
-  - [Installing Dependencies](#installing-dependencies)
-  - [Basic Connection Setup](#basic-connection-setup)
-  - [Wallet Management](#wallet-management)
-  - [Fetching Market Data](#fetching-market-data)
-  - [Account Information](#account-information)
-  - [Order Management](#order-management)
-  - [Advanced Features](#advanced-features)
-    - [Transfers and Deposits](#transfers-and-deposits)
-    - [Faucet Interaction (for testnet)](#faucet-interaction-for-testnet)
-  - [Websocket Integration](#websocket-integration)
 
 ## Project Setup
 
@@ -108,12 +93,10 @@ If successful, you should see a message indicating that you've connected to the 
 Next, let's add wallet functionality. Create a file called `wallet.ts`:
 
 ```typescript
-import { BECH32_PREFIX } from '@dydxprotocol/v4-client-js';
-import LocalWallet from '@dydxprotocol/v4-client-js/build/src/clients/modules/local-wallet';
-import { SubaccountInfo } from '@dydxprotocol/v4-client-js/build/src/clients/subaccount';
+import { BECH32_PREFIX, LocalWallet, SubaccountInfo} from '@dydxprotocol/v4-client-js';
 
 // For demo purposes - in a real app, handle mnemonics securely!
-async function createWalletFromMnemonic(mnemonic: string) {
+export async function createWalletFromMnemonic(mnemonic: string) {
   try {
     const wallet = await LocalWallet.fromMnemonic(mnemonic, BECH32_PREFIX);
     console.log('Wallet created successfully');
@@ -124,7 +107,7 @@ async function createWalletFromMnemonic(mnemonic: string) {
   }
 }
 
-function createSubaccount(wallet: any, subaccountNumber: number = 0) {
+export function createSubaccount(wallet: any, subaccountNumber: number = 0) {
   try {
     const subaccount = new SubaccountInfo(wallet, subaccountNumber);
     console.log('Subaccount created successfully');
@@ -134,36 +117,35 @@ function createSubaccount(wallet: any, subaccountNumber: number = 0) {
     throw error;
   }
 }
-
-export { createWalletFromMnemonic, createSubaccount };
 ```
 
 Now let's update `index.ts` to use our wallet functions:
 
 ```typescript
-import { connectToNetwork } from './connection';
-import { createWalletFromMnemonic, createSubaccount } from './wallet';
+import { connectToNetwork } from './connection'
+import { createWalletFromMnemonic, createSubaccount } from './wallet'
 
 // Example mnemonic - for demo purposes only
 // In production, secure your mnemonic and never hardcode it
-const EXAMPLE_MNEMONIC = 'your test mnemonic here'; // Replace with a test mnemonic
+const EXAMPLE_MNEMONIC =
+  'mirror actor skill push coach wait confirm orchard lunch mobile athlete gossip awake miracle matter bus reopen team ladder lazy list timber render wait'
 
 async function main() {
   try {
-    const client = await connectToNetwork();
-    console.log('Connected to dYdX network');
-    
-    const wallet = await createWalletFromMnemonic(EXAMPLE_MNEMONIC);
-    console.log('Wallet address:', wallet.address);
-    
-    const subaccount = createSubaccount(wallet, 0);
-    console.log('Subaccount created');
+    const client = await connectToNetwork()
+    console.log('Connected to dYdX network')
+
+    const wallet = await createWalletFromMnemonic(EXAMPLE_MNEMONIC)
+    console.log('Wallet address:', wallet.address)
+
+    const subaccount = createSubaccount(wallet, 0)
+    console.log('Subaccount created')
   } catch (error) {
-    console.error('Error in main function:', error.message);
+    console.error('Error in main function:', error.message)
   }
 }
 
-main();
+main()
 ```
 
 ## Fetching Market Data
@@ -171,52 +153,54 @@ main();
 Now let's create a module to fetch market data. Create a file called `market-data.ts`:
 
 ```typescript
-import { IndexerClient } from '@dydxprotocol/v4-client-js/build/src/clients/indexer-client';
+import { IndexerClient } from '@dydxprotocol/v4-client-js'
 
-async function getPerpetualMarkets(indexerClient: IndexerClient, marketId?: string) {
+export async function getPerpetualMarkets(indexerClient: IndexerClient, marketId?: string) {
   try {
-    const response = await indexerClient.markets.getPerpetualMarkets(marketId);
-    return response.markets;
+    const response = await indexerClient.markets.getPerpetualMarkets(marketId)
+    return response.markets
   } catch (error) {
-    console.error('Failed to fetch perpetual markets:', error.message);
-    throw error;
+    console.error('Failed to fetch perpetual markets:', error.message)
+    throw error
   }
 }
 
-async function getOrderbook(indexerClient: IndexerClient, marketId: string) {
+export async function getOrderbook(indexerClient: IndexerClient, marketId: string) {
   try {
-    const response = await indexerClient.markets.getPerpetualMarketOrderbook(marketId);
+    const response = await indexerClient.markets.getPerpetualMarketOrderbook(marketId)
     return {
       bids: response.bids,
-      asks: response.asks
-    };
+      asks: response.asks,
+    }
   } catch (error) {
-    console.error(`Failed to fetch orderbook for ${marketId}:`, error.message);
-    throw error;
+    console.error(`Failed to fetch orderbook for ${marketId}:`, error.message)
+    throw error
   }
 }
 
-async function getMarketTrades(indexerClient: IndexerClient, marketId: string) {
+export async function getMarketTrades(indexerClient: IndexerClient, marketId: string) {
   try {
-    const response = await indexerClient.markets.getPerpetualMarketTrades(marketId);
-    return response.trades;
+    const response = await indexerClient.markets.getPerpetualMarketTrades(marketId)
+    return response.trades
   } catch (error) {
-    console.error(`Failed to fetch trades for ${marketId}:`, error.message);
-    throw error;
+    console.error(`Failed to fetch trades for ${marketId}:`, error.message)
+    throw error
   }
 }
 
-async function getMarketCandles(indexerClient: IndexerClient, marketId: string, resolution: string = '1MIN') {
+export async function getMarketCandles(
+  indexerClient: IndexerClient,
+  marketId: string,
+  resolution: string = '1MIN'
+) {
   try {
-    const response = await indexerClient.markets.getPerpetualMarketCandles(marketId, resolution);
-    return response.candles;
+    const response = await indexerClient.markets.getPerpetualMarketCandles(marketId, resolution)
+    return response.candles
   } catch (error) {
-    console.error(`Failed to fetch candles for ${marketId}:`, error.message);
-    throw error;
+    console.error(`Failed to fetch candles for ${marketId}:`, error.message)
+    throw error
   }
 }
-
-export { getPerpetualMarkets, getOrderbook, getMarketTrades, getMarketCandles };
 ```
 
 Let's update our `index.ts` to use the market data functions:
