@@ -1,0 +1,15 @@
+{
+  "name": "dydx-js-example",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@dydxprotocol/v4-client-js": "^1.21.3",
+    "lodash": "^4.17.21"
+  }
+}
