@@ -246,122 +246,121 @@ main();
 Let's create a module to fetch account information. Create a file called `account-info.ts`:
 
 ```typescript
-import { IndexerClient } from '@dydxprotocol/v4-client-js/build/src/clients/indexer-client';
+import { IndexerClient } from '@dydxprotocol/v4-client-js'
 
-async function getSubaccounts(indexerClient: IndexerClient, address: string) {
+export async function getSubaccounts(indexerClient: IndexerClient, address: string) {
   try {
-    const response = await indexerClient.account.getSubaccounts(address);
-    return response.subaccounts;
+    const response = await indexerClient.account.getSubaccounts(address)
+    return response.subaccounts
   } catch (error) {
-    console.error('Failed to fetch subaccounts:', error.message);
-    throw error;
+    console.error('Failed to fetch subaccounts:', error.message)
+    throw error
   }
 }
 
-async function getSubaccountById(indexerClient: IndexerClient, address: string, subaccountNumber: number) {
+export async function getSubaccountById(
+  indexerClient: IndexerClient,
+  address: string,
+  subaccountNumber: number
+) {
   try {
-    const response = await indexerClient.account.getSubaccount(address, subaccountNumber);
-    return response.subaccount;
+    const response = await indexerClient.account.getSubaccount(address, subaccountNumber)
+    return response.subaccount
   } catch (error) {
-    console.error(`Failed to fetch subaccount ${subaccountNumber}:`, error.message);
-    throw error;
+    console.error(`Failed to fetch subaccount ${subaccountNumber}:`, error.message)
+    throw error
   }
 }
 
-async function getAssetPositions(indexerClient: IndexerClient, address: string, subaccountNumber: number) {
+export async function getAssetPositions(
+  indexerClient: IndexerClient,
+  address: string,
+  subaccountNumber: number
+) {
   try {
-    const response = await indexerClient.account.getSubaccountAssetPositions(address, subaccountNumber);
-    return response.positions;
+    const response = await indexerClient.account.getSubaccountAssetPositions(
+      address,
+      subaccountNumber
+    )
+    return response.positions
   } catch (error) {
-    console.error('Failed to fetch asset positions:', error.message);
-    throw error;
+    console.error('Failed to fetch asset positions:', error.message)
+    throw error
   }
 }
 
-async function getPerpPositions(indexerClient: IndexerClient, address: string, subaccountNumber: number) {
+export async function getPerpPositions(
+  indexerClient: IndexerClient,
+  address: string,
+  subaccountNumber: number
+) {
   try {
-    const response = await indexerClient.account.getSubaccountPerpetualPositions(address, subaccountNumber);
-    return response.positions;
+    const response = await indexerClient.account.getSubaccountPerpetualPositions(
+      address,
+      subaccountNumber
+    )
+    return response.positions
   } catch (error) {
-    console.error('Failed to fetch perpetual positions:', error.message);
-    throw error;
+    console.error('Failed to fetch perpetual positions:', error.message)
+    throw error
   }
 }
 
-async function getOrders(indexerClient: IndexerClient, address: string, subaccountNumber: number) {
+export async function getOrders(
+  indexerClient: IndexerClient,
+  address: string,
+  subaccountNumber: number
+) {
   try {
-    const response = await indexerClient.account.getSubaccountOrders(address, subaccountNumber);
-    return response;
+    const response = await indexerClient.account.getSubaccountOrders(address, subaccountNumber)
+    return response
   } catch (error) {
-    console.error('Failed to fetch orders:', error.message);
-    throw error;
+    console.error('Failed to fetch orders:', error.message)
+    throw error
   }
 }
 
-async function getFills(indexerClient: IndexerClient, address: string, subaccountNumber: number) {
+export async function getFills(
+  indexerClient: IndexerClient,
+  address: string,
+  subaccountNumber: number
+) {
   try {
-    const response = await indexerClient.account.getSubaccountFills(address, subaccountNumber);
-    return response.fills;
+    const response = await indexerClient.account.getSubaccountFills(address, subaccountNumber)
+    return response.fills
   } catch (error) {
-    console.error('Failed to fetch fills:', error.message);
-    throw error;
+    console.error('Failed to fetch fills:', error.message)
+    throw error
   }
 }
 
-async function getHistoricalPNL(indexerClient: IndexerClient, address: string, subaccountNumber: number) {
+export async function getHistoricalPNL(
+  indexerClient: IndexerClient,
+  address: string,
+  subaccountNumber: number
+) {
   try {
-    const response = await indexerClient.account.getSubaccountHistoricalPNLs(address, subaccountNumber);
-    return response.historicalPnl;
+    const response = await indexerClient.account.getSubaccountHistoricalPNLs(
+      address,
+      subaccountNumber
+    )
+    return response.historicalPnl
   } catch (error) {
-    console.error('Failed to fetch historical PNL:', error.message);
-    throw error;
+    console.error('Failed to fetch historical PNL:', error.message)
+    throw error
   }
 }
-
-export {
-  getSubaccounts,
-  getSubaccountById,
-  getAssetPositions,
-  getPerpPositions,
-  getOrders,
-  getFills,
-  getHistoricalPNL
-};
 ```
 
-Let's update our `index.ts` to use the account information functions:
+Let's update our `index.ts` to use the account information functions.
+Now that we’re past basic usage , we won’t include all previous imports and code here. so if you’re following along, make sure to put the previous code in `index.ts` file. As a result, our examples will be a bit more concise, letting us focus on the actual details rather than boilerplate code.
 
 ```typescript
-import { connectToNetwork } from './connection';
-import { createWalletFromMnemonic, createSubaccount } from './wallet';
-import { getPerpetualMarkets, getOrderbook } from './market-data';
-import { getSubaccounts, getPerpPositions } from './account-info';
-
-// Example mnemonic - for demo purposes only
-const EXAMPLE_MNEMONIC = 'your test mnemonic here'; // Replace with a test mnemonic
+import { getPerpPositions, getSubaccounts } from './account-info'
 
 async function main() {
   try {
-    const client = await connectToNetwork();
-    console.log('Connected to dYdX network');
-    
-    const wallet = await createWalletFromMnemonic(EXAMPLE_MNEMONIC);
-    console.log('Wallet address:', wallet.address);
-    
-    const subaccount = createSubaccount(wallet, 0);
-    console.log('Subaccount created');
-    
-    // Get market data
-    const markets = await getPerpetualMarkets(client.indexerClient);
-    console.log('Available markets:', Object.keys(markets));
-    
-    // Get orderbook for ETH-USD
-    const ethOrderbook = await getOrderbook(client.indexerClient, 'ETH-USD');
-    console.log('ETH-USD Orderbook:');
-    console.log('- Top bid:', ethOrderbook.bids[0]);
-    console.log('- Top ask:', ethOrderbook.asks[0]);
-    
-    // Get account information
+    // Previous code    
     if (wallet.address) {
       const subaccounts = await getSubaccounts(client.indexerClient, wallet.address);
       console.log('Subaccounts:', subaccounts);
@@ -384,19 +383,19 @@ main();
 Now let's create functions to place and manage orders. Create a file called `order-management.ts`:
 
 ```typescript
-import { randomInt } from 'crypto';
-import { CompositeClient } from '@dydxprotocol/v4-client-js/build/src/clients/composite-client';
-import { OrderSide, OrderTimeInForce, OrderType, OrderExecution } from '@dydxprotocol/v4-client-js/build/src/clients/constants';
-import { SubaccountInfo } from '@dydxprotocol/v4-client-js/build/src/clients/subaccount';
-import { Order_TimeInForce } from '@dydxprotocol/v4-client-js/build/src/codegen/dydxprotocol/clob/order';
-import { OrderFlags } from '@dydxprotocol/v4-client-js';
+import {
+  CompositeClient,
+  OrderSide,
+  OrderTimeInForce,
+  OrderType,
+  OrderExecution,
+  SubaccountInfo,
+  Order_TimeInForce,
+  OrderFlags,
+} from '@dydxprotocol/v4-client-js'
 
-// Maximum client ID (32-bit unsigned integer)
-const MAX_CLIENT_ID = 2 ** 32 - 1;
+const MAX_CLIENT_ID = 2 ** 32 - 1
 
-/**
- * Place a long-term (stateful) order
- */
 async function placeLongTermOrder(
   client: CompositeClient,
   subaccount: SubaccountInfo,
@@ -407,8 +406,7 @@ async function placeLongTermOrder(
   timeInForceSeconds: number = 60
 ) {
   try {
-    const clientId = randomInt(MAX_CLIENT_ID);
-    
+    const clientId = Math.floor(Math.random() * MAX_CLIENT_ID)
     const tx = await client.placeOrder(
       subaccount,
       marketId,
@@ -420,25 +418,15 @@ async function placeLongTermOrder(
       OrderTimeInForce.GTT,
       timeInForceSeconds,
       OrderExecution.DEFAULT,
-      false,  // postOnly
-      false   // reduceOnly
-    );
-    
-    console.log('Order placed successfully');
-    return {
-      clientId,
-      transactionHash: tx.hash,
-      response: tx
-    };
+      false,
+      false
+    )
   } catch (error) {
-    console.error('Failed to place long-term order:', error.message);
-    throw error;
+    console.error('Failed to place long-term order:', error.message)
+    throw error
   }
 }
 
-/**
- * Place a short-term order
- */
 async function placeShortTermOrder(
   client: CompositeClient,
   subaccount: SubaccountInfo,
@@ -449,12 +437,12 @@ async function placeShortTermOrder(
   postOnly: boolean = false
 ) {
   try {
-    const clientId = randomInt(MAX_CLIENT_ID);
-    
+    const clientId = Math.floor(Math.random() * MAX_CLIENT_ID)
+
     // Get current block height and set goodTilBlock
-    const currentBlock = await client.validatorClient.get.latestBlockHeight();
-    const goodTilBlock = currentBlock + 10; // Valid for 10 blocks
-    
+    const currentBlock = await client.validatorClient.get.latestBlockHeight()
+    const goodTilBlock = currentBlock + 10 // Valid for 10 blocks
+
     const tx = await client.placeShortTermOrder(
       subaccount,
       marketId,
@@ -463,20 +451,22 @@ async function placeShortTermOrder(
       size,
       clientId,
       goodTilBlock,
-      postOnly ? Order_TimeInForce.TIME_IN_FORCE_POST_ONLY : Order_TimeInForce.TIME_IN_FORCE_UNSPECIFIED,
-      false  // reduceOnly
-    );
-    
-    console.log('Short-term order placed successfully');
+      postOnly
+        ? Order_TimeInForce.TIME_IN_FORCE_POST_ONLY
+        : Order_TimeInForce.TIME_IN_FORCE_UNSPECIFIED,
+      false // reduceOnly
+    )
+
+    console.log('Short-term order placed successfully')
     return {
       clientId,
       transactionHash: tx.hash,
       goodTilBlock,
-      response: tx
-    };
+      response: tx,
+    }
   } catch (error) {
-    console.error('Failed to place short-term order:', error.message);
-    throw error;
+    console.error('Failed to place short-term order:', error.message)
+    throw error
   }
 }
 
@@ -500,16 +490,16 @@ async function cancelOrder(
       marketId,
       goodTilBlock,
       goodTilBlockTime
-    );
-    
-    console.log('Order cancelled successfully');
+    )
+
+    console.log('Order cancelled successfully')
     return {
       clientId,
-      response: tx
-    };
+      response: tx,
+    }
   } catch (error) {
-    console.error('Failed to cancel order:', error.message);
-    throw error;
+    console.error('Failed to cancel order:', error.message)
+    throw error
   }
 }
 
@@ -519,27 +509,27 @@ async function cancelOrder(
 async function batchCancelShortTermOrders(
   client: CompositeClient,
   subaccount: SubaccountInfo,
-  marketOrderPairs: { marketId: string, clientIds: number[] }[]
+  marketOrderPairs: { marketId: string; clientIds: number[] }[]
 ) {
   try {
     // Get current block height and set goodTilBlock
-    const currentBlock = await client.validatorClient.get.latestBlockHeight();
-    const goodTilBlock = currentBlock + 10; // Valid for 10 blocks
-    
+    const currentBlock = await client.validatorClient.get.latestBlockHeight()
+    const goodTilBlock = currentBlock + 10 // Valid for 10 blocks
+
     const tx = await client.batchCancelShortTermOrdersWithMarketId(
       subaccount,
       marketOrderPairs,
       goodTilBlock
-    );
-    
-    console.log('Orders batch cancelled successfully');
+    )
+
+    console.log('Orders batch cancelled successfully')
     return {
       transactionHash: tx.hash,
-      response: tx
-    };
+      response: tx,
+    }
   } catch (error) {
-    console.error('Failed to batch cancel orders:', error.message);
-    throw error;
+    console.error('Failed to batch cancel orders:', error.message)
+    throw error
   }
 }
 
@@ -548,74 +538,75 @@ export {
   placeShortTermOrder,
   cancelOrder,
   batchCancelShortTermOrders,
-  MAX_CLIENT_ID
-};
+  MAX_CLIENT_ID,
+}
+
 ```
 
 Now let's update our `index.ts` file to include order management:
 
 ```typescript
-import { connectToNetwork } from './connection';
-import { createWalletFromMnemonic, createSubaccount } from './wallet';
-import { getPerpetualMarkets, getOrderbook } from './market-data';
-import { getSubaccounts, getPerpPositions, getOrders } from './account-info';
-import { placeShortTermOrder, cancelOrder } from './order-management';
-import { OrderSide, OrderFlags } from '@dydxprotocol/v4-client-js';
+import { OrderFlags, OrderSide } from '@dydxprotocol/v4-client-js'
+import { getOrders, getPerpPositions, getSubaccounts } from './account-info'
+import { connectToNetwork } from './connection'
+import { getOrderbook, getPerpetualMarkets } from './market-data'
+import { cancelOrder, placeShortTermOrder } from './order-management'
+import { createWalletFromMnemonic, createSubaccount } from './wallet'
 
 // Example mnemonic - for demo purposes only
-const EXAMPLE_MNEMONIC = 'your test mnemonic here'; // Replace with a test mnemonic
+// In production, secure your mnemonic and never hardcode it
+const EXAMPLE_MNEMONIC =
+  'mirror actor skill push coach wait confirm orchard lunch mobile athlete gossip awake miracle matter bus reopen team ladder lazy list timber render wait'
 
 async function main() {
   try {
-    const client = await connectToNetwork();
-    console.log('Connected to dYdX network');
-    
-    const wallet = await createWalletFromMnemonic(EXAMPLE_MNEMONIC);
-    console.log('Wallet address:', wallet.address);
-    
-    const subaccount = createSubaccount(wallet, 0);
-    console.log('Subaccount created');
-    
+    const client = await connectToNetwork()
+    console.log('Connected to dYdX network')
+
+    const wallet = await createWalletFromMnemonic(EXAMPLE_MNEMONIC)
+    console.log('Wallet address:', wallet.address)
+
+    const subaccount = createSubaccount(wallet, 0)
+    console.log('Subaccount created')
+
     // Get market data
-    const markets = await getPerpetualMarkets(client.indexerClient);
-    console.log('Available markets:', Object.keys(markets));
-    
+    const markets = await getPerpetualMarkets(client.indexerClient)
+    console.log('Available markets:', Object.keys(markets))
+
     // Get orderbook for ETH-USD
-    const ethOrderbook = await getOrderbook(client.indexerClient, 'ETH-USD');
-    console.log('ETH-USD Orderbook:');
-    console.log('- Top bid:', ethOrderbook.bids[0]);
-    console.log('- Top ask:', ethOrderbook.asks[0]);
-    
+    const ethOrderbook = await getOrderbook(client.indexerClient, 'ETH-USD')
+    console.log('ETH-USD Orderbook:')
+    console.log('- Top bid:', ethOrderbook.bids[0])
+    console.log('- Top ask:', ethOrderbook.asks[0])
+
     // Get account information
     if (wallet.address) {
-      const subaccounts = await getSubaccounts(client.indexerClient, wallet.address);
-      console.log('Subaccounts:', subaccounts);
-      
+      const subaccounts = await getSubaccounts(client.indexerClient, wallet.address)
+      console.log('Subaccounts:', subaccounts)
+
       if (subaccounts.length > 0) {
-        const positions = await getPerpPositions(client.indexerClient, wallet.address, 0);
-        console.log('Perpetual positions:', positions);
-        
-        // Show existing orders
-        const orders = await getOrders(client.indexerClient, wallet.address, 0);
-        console.log('Existing orders:', orders);
-        
-        // Place a short-term order (commented out for safety - uncomment to test)
-        /*
+        const positions = await getPerpPositions(client.indexerClient, wallet.address, 0)
+        console.log('Perpetual positions:', positions)
+
+        const orders = await getOrders(client.indexerClient, wallet.address, 0)
+        console.log('Existing orders:', orders)
+
+        // Place a short-term order
         const orderResult = await placeShortTermOrder(
           client,
           subaccount,
           'ETH-USD',
           OrderSide.BUY,
-          1000, // Price well below market to avoid execution
-          0.01,  // Size
-          true   // Post-only
-        );
-        console.log('Order placed with clientId:', orderResult.clientId);
-        
-        // Wait for 5 seconds before cancelling
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        
+          1000,
+          0.01,
+          true
+        )
+
+        console.log('Order placed with clientId', orderResult.clientId)
+        await new Promise((resolve) => setTimeout(resolve, 5000))
+
         // Cancel the order
+
         await cancelOrder(
           client,
           subaccount,
@@ -623,16 +614,14 @@ async function main() {
           OrderFlags.SHORT_TERM,
           'ETH-USD',
           orderResult.goodTilBlock
-        );
-        */
+        )
       }
     }
   } catch (error) {
-    console.error('Error in main function:', error.message);
+    console.error('Error in main function:', error.message)
   }
 }
-
-main();
+main()
 ```
 
 ## Advanced Features
@@ -642,9 +631,8 @@ main();
 Let's create a module for transfers and deposits. Create a file called `transfer.ts`:
 
 ```typescript
-import Long from 'long';
-import { CompositeClient } from '@dydxprotocol/v4-client-js/build/src/clients/composite-client';
-import { SubaccountInfo } from '@dydxprotocol/v4-client-js/build/src/clients/subaccount';
+import Long from 'long'
+import { CompositeClient, SubaccountInfo } from '@dydxprotocol/v4-client-js'
 
 /**
  * Deposit USDC to a subaccount
@@ -656,22 +644,22 @@ async function depositToSubaccount(
 ) {
   try {
     // Convert amount to quantum units (USDC has 6 decimals)
-    const quantumAmount = new Long(amount * 1_000_000);
-    
+    const quantumAmount = new Long(amount * 1_000_000)
+
     const tx = await client.validatorClient.post.deposit(
       subaccount,
       0, // Asset ID 0 is USDC
       quantumAmount
-    );
-    
-    console.log('Deposit successful');
+    )
+
+    console.log('Deposit successful')
     return {
       transactionHash: tx.hash,
-      response: tx
-    };
+      response: tx,
+    }
   } catch (error) {
-    console.error('Failed to deposit to subaccount:', error.message);
-    throw error;
+    console.error('Failed to deposit to subaccount:', error.message)
+    throw error
   }
 }
 
@@ -685,22 +673,22 @@ async function withdrawFromSubaccount(
 ) {
   try {
     // Convert amount to quantum units (USDC has 6 decimals)
-    const quantumAmount = new Long(amount * 1_000_000);
-    
+    const quantumAmount = new Long(amount * 1_000_000)
+
     const tx = await client.validatorClient.post.withdraw(
       subaccount,
       0, // Asset ID 0 is USDC
       quantumAmount
-    );
-    
-    console.log('Withdrawal successful');
+    )
+
+    console.log('Withdrawal successful')
     return {
       transactionHash: tx.hash,
-      response: tx
-    };
+      response: tx,
+    }
   } catch (error) {
-    console.error('Failed to withdraw from subaccount:', error.message);
-    throw error;
+    console.error('Failed to withdraw from subaccount:', error.message)
+    throw error
   }
 }
 
@@ -716,193 +704,119 @@ async function transferBetweenSubaccounts(
 ) {
   try {
     // Convert amount to quantum units (USDC has 6 decimals)
-    const quantumAmount = new Long(amount * 1_000_000);
-    
+    const quantumAmount = new Long(amount * 1_000_000)
+
     const tx = await client.validatorClient.post.transfer(
       fromSubaccount,
       toAddress,
       toSubaccountNumber,
       0, // Asset ID 0 is USDC
       quantumAmount
-    );
-    
-    console.log('Transfer successful');
+    )
+
+    console.log('Transfer successful')
     return {
       transactionHash: tx.hash,
-      response: tx
-    };
+      response: tx,
+    }
   } catch (error) {
-    console.error('Failed to transfer between subaccounts:', error.message);
-    throw error;
+    console.error('Failed to transfer between subaccounts:', error.message)
+    throw error
   }
 }
 
-export {
-  depositToSubaccount,
-  withdrawFromSubaccount,
-  transferBetweenSubaccounts
-};
+export { depositToSubaccount, withdrawFromSubaccount, transferBetweenSubaccounts }
 ```
 
-### Faucet Interaction (for testnet)
-
-For testnet, let's create a faucet module. Create a file called `faucet.ts`:
+Now let's update our `index.ts` file to include USDC deposit to subaccount.
+Note that We have installed additional node package `base64-js` to convert byte array to string.
 
 ```typescript
-import { FaucetClient } from '@dydxprotocol/v4-client-js/build/src/clients/faucet-client';
-import { FaucetApiHost } from '@dydxprotocol/v4-client-js/build/src/clients/constants';
+import { OrderFlags, OrderSide } from '@dydxprotocol/v4-client-js'
+import { getOrders, getPerpPositions, getSubaccounts } from './account-info'
+import { connectToNetwork } from './connection'
+import { getOrderbook, getPerpetualMarkets } from './market-data'
+import { cancelOrder, placeShortTermOrder } from './order-management'
+import { createWalletFromMnemonic, createSubaccount } from './wallet'
+import { depositToSubaccount } from './transfer'
+import { ByteArrayEncoding } from '@dydxprotocol/v4-client-js/build/src/lib/helpers'
+import base64 from 'base64-js'
 
-/**
- * Fill a subaccount with test USDC from the faucet (testnet only)
- */
-async function fillFromFaucet(address: string, subaccountNumber: number = 0, amount: number = 2000) {
+// Example mnemonic - for demo purposes only
+// In production, secure your mnemonic and never hardcode it
+const EXAMPLE_MNEMONIC =
+  'mirror actor skill push coach wait confirm orchard lunch mobile athlete gossip awake miracle matter bus reopen team ladder lazy list timber render wait'
+
+async function main() {
   try {
-    const client = new FaucetClient(FaucetApiHost.TESTNET);
-    
-    const response = await client.fill(address, subaccountNumber, amount);
-    
-    console.log('Faucet fill successful');
-    return {
-      status: response.status,
-      response: response
-    };
+    const client = await connectToNetwork()
+    console.log('Connected to dYdX network')
+
+    const wallet = await createWalletFromMnemonic(EXAMPLE_MNEMONIC)
+    console.log('Wallet address:', wallet.address)
+
+    const subaccount = createSubaccount(wallet, 0)
+    console.log('Subaccount created')
+
+    // Get market data
+    const markets = await getPerpetualMarkets(client.indexerClient)
+    console.log('Available markets:', Object.keys(markets))
+
+    // Get orderbook for ETH-USD
+    const ethOrderbook = await getOrderbook(client.indexerClient, 'ETH-USD')
+    console.log('ETH-USD Orderbook:')
+    console.log('- Top bid:', ethOrderbook.bids[0])
+    console.log('- Top ask:', ethOrderbook.asks[0])
+
+    // Get account information
+    if (wallet.address) {
+      const subaccounts = await getSubaccounts(client.indexerClient, wallet.address)
+      console.log('Subaccounts:', subaccounts)
+
+      if (subaccounts.length > 0) {
+        const positions = await getPerpPositions(client.indexerClient, wallet.address, 0)
+        console.log('Perpetual positions:', positions)
+
+        const orders = await getOrders(client.indexerClient, wallet.address, 0)
+        console.log('Existing orders:', orders)
+
+        // Place a short-term order
+        const orderResult = await placeShortTermOrder(
+          client,
+          subaccount,
+          'ETH-USD',
+          OrderSide.BUY,
+          1000,
+          0.01,
+          true
+        )
+
+        console.log('Order placed with clientId', orderResult.clientId)
+        await new Promise((resolve) => setTimeout(resolve, 5000))
+
+        // Cancel the order
+
+        await cancelOrder(
+          client,
+          subaccount,
+          orderResult.clientId,
+          OrderFlags.SHORT_TERM,
+          'ETH-USD',
+          orderResult.goodTilBlock
+        )
+
+        // Deposit USDC to subaccount
+        const { transactionHash } = await depositToSubaccount(client, subaccount, 1)
+        console.log('Deposit successful', base64.fromByteArray(transactionHash))
+      }
+    }
   } catch (error) {
-    console.error('Failed to fill from faucet:', error.message);
-    throw error;
+    console.error('Error in main function:', error.message)
   }
 }
 
-export { fillFromFaucet };
+main()
 ```
 
-## Websocket Integration
 
-Let's create a module for WebSocket interactions. Create a file called `websocket.ts`:
-
-```typescript
-import { 
-  SocketClient, 
-  IncomingMessageTypes, 
-  CandlesResolution 
-} from '@dydxprotocol/v4-client-js/build/src/clients/socket-client';
-import { Network } from '@dydxprotocol/v4-client-js';
-
-class DydxWebsocketManager {
-  private socketClient: SocketClient;
-  private isConnected: boolean = false;
-  
-  constructor(network = Network.testnet()) {
-    this.socketClient = new SocketClient(
-      network.indexerConfig,
-      this.onOpen.bind(this),
-      this.onClose.bind(this),
-      this.onMessage.bind(this),
-      this.onError.bind(this)
-    );
-  }
-  
-  connect() {
-    this.socketClient.connect();
-  }
-  
-  disconnect() {
-    this.socketClient.disconnect();
-    this.isConnected = false;
-  }
-  
-  private onOpen() {
-    console.log('WebSocket connection opened');
-    this.isConnected = true;
-  }
-  
-  private onClose() {
-    console.log('WebSocket connection closed');
-    this.isConnected = false;
-  }
-  
-  private onMessage(message: { data: string | ArrayBuffer }) {
-    if (typeof message.data === 'string') {
-      try {
-        const data = JSON.parse(message.data);
-        
-        // Handle the connected event by setting up subscriptions
-        if (data.type === IncomingMessageTypes.CONNECTED) {
-          console.log('WebSocket connected, channel subscriptions can be made now');
-        }
-        
-        // Process other message types
-        this.processMessage(data);
-      } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
-      }
-    }
-  }
-  
-  private onError(event: { message: string }) {
-    console.error('WebSocket error:', event.message);
-  }
-  
-  private processMessage(data: any) {
-    // Example message processing
-    if (data.type === IncomingMessageTypes.SUBSCRIBED) {
-      console.log(`Subscribed to channel: ${data.channel}, id: ${data.id}`);
-    } else if (data.type === IncomingMessageTypes.CHANNEL_DATA) {
-      console.log(`Received data for channel: ${data.channel}, id: ${data.id}`);
-      // Process channel data based on the channel type
-      switch (data.channel) {
-        case 'v4_markets':
-          console.log('Markets update:', data.contents);
-          break;
-        case 'v4_orderbook':
-          console.log('Orderbook update for', data.id);
-          break;
-        case 'v4_trades':
-          console.log('Trades update for', data.id);
-          break;
-        case 'v4_candles':
-          console.log('Candles update for', data.id);
-          break;
-        case 'v4_subaccounts':
-          console.log('Subaccount update for', data.id);
-          break;
-        default:
-          console.log('Unknown channel data:', data);
-      }
-    }
-  }
-  
-  // Subscription methods
-  subscribeToMarkets() {
-    if (!this.isConnected) {
-      console.error('WebSocket not connected');
-      return;
-    }
-    this.socketClient.subscribeToMarkets();
-  }
-  
-  subscribeToOrderbook(marketId: string) {
-    if (!this.isConnected) {
-      console.error('WebSocket not connected');
-      return;
-    }
-    this.socketClient.subscribeToOrderbook(marketId);
-  }
-  
-  subscribeToTrades(marketId: string) {
-    if (!this.isConnected) {
-      console.error('WebSocket not connected');
-      return;
-    }
-    this.socketClient.subscribeToTrades(marketId);
-  }
-  
-  subscribeToCandles(marketId: string, resolution: CandlesResolution = CandlesResolution.ONE_MINUTE) {
-    if (!this.isConnected) {
-      console.error('WebSocket not connected');
-      return;
-    }
-    this.socketClient.subscribeToCandles(marketId, resolution);
-  }
-  
-  subscribeToSubaccount(address: string, subaccountNumber: number) {
-    if (!this.isConnected) {
+For more examples, checkout https://github.com/dydxprotocol/v4-clients/tree/main/v4-client-js/examples

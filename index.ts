@@ -1,7 +1,12 @@
-import { getPerpPositions, getSubaccounts } from './account-info'
+import { OrderFlags, OrderSide } from '@dydxprotocol/v4-client-js'
+import { getOrders, getPerpPositions, getSubaccounts } from './account-info'
 import { connectToNetwork } from './connection'
 import { getOrderbook, getPerpetualMarkets } from './market-data'
+import { cancelOrder, placeShortTermOrder } from './order-management'
 import { createWalletFromMnemonic, createSubaccount } from './wallet'
+import { depositToSubaccount } from './transfer'
+import { ByteArrayEncoding } from '@dydxprotocol/v4-client-js/build/src/lib/helpers'
+import base64 from 'base64-js'
 
 // Example mnemonic - for demo purposes only
 // In production, secure your mnemonic and never hardcode it
@@ -37,6 +42,38 @@ async function main() {
       if (subaccounts.length > 0) {
         const positions = await getPerpPositions(client.indexerClient, wallet.address, 0)
         console.log('Perpetual positions:', positions)
+
+        const orders = await getOrders(client.indexerClient, wallet.address, 0)
+        console.log('Existing orders:', orders)
+
+        // Place a short-term order
+        const orderResult = await placeShortTermOrder(
+          client,
+          subaccount,
+          'ETH-USD',
+          OrderSide.BUY,
+          1000,
+          0.01,
+          true
+        )
+
+        console.log('Order placed with clientId', orderResult.clientId)
+        await new Promise((resolve) => setTimeout(resolve, 5000))
+
+        // Cancel the order
+
+        await cancelOrder(
+          client,
+          subaccount,
+          orderResult.clientId,
+          OrderFlags.SHORT_TERM,
+          'ETH-USD',
+          orderResult.goodTilBlock
+        )
+
+        // Deposit USDC to subaccount
+        const { transactionHash } = await depositToSubaccount(client, subaccount, 1)
+        console.log('Deposit successful', base64.fromByteArray(transactionHash))
       }
     }
   } catch (error) {

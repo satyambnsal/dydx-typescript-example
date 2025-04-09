@@ -15,7 +15,6 @@ export async function connectToNetwork() {
     const network = Network.testnet()
     const client = await CompositeClient.connect(network)
     console.log('Successfully connected to dYdX network')
-    console.log('Client:', client)
     return client
   } catch (error: unknown) {
     console.error('Failed to connect to dYdX network:', error.message)
